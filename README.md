@@ -1,24 +1,62 @@
 # README
+# PART II
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+How to implement polymorphism to class Animal
 
-Things you may want to cover:
+## First Step
+We create new a project
 
-* Ruby version
+ ```$ rails new polymorphism_animals``` 
+ 
+## Second step
+We create the classes involved
 
-* System dependencies
+ ``` $ rails g model  Animals species animalable:references{polymorphic} ```
+ 
+ ``` $ rails g model Cat name```  
+ 
+ ``` $ rails g model Crocodile name```
+ 
+ ``` $ rails g model Eagle name``` 
 
-* Configuration
+## Third step 
+we adjust the cardinality between the classified
 
-* Database creation
+```ruby
+class Animal < ApplicationRecord
+   belongs_to :animalable, polymorphic: true
+end
 
-* Database initialization
+class Cat < ApplicationRecord
+   has_many :animals , as: :animalable
+end
 
-* How to run the test suite
+class Crocodile < ApplicationRecord
+   has_many :animals , as: :animalable
+end
 
-* Services (job queues, cache servers, search engines, etc.)
+class Eagle < ApplicationRecord
+   has_many :animals , as: :animalable
+end
+```
 
-* Deployment instructions
+## Fourth step
+Now we can create instances from the console for each of the classes
 
-* ...
+### Console 
+ ```$ rails c``` 
+
+```
+Cat.create(name: "Cat")
+Cat.last.animal << Animal.new(species: "Felis silvestris catus")
+=> #<Animal id: 1, species: "Felis silvestris catus", animalable_type: "Cat", animalable_id: 1, created_at: "", updated_at: "">
+
+Crocodile.create(name: "Cocodrilo")
+Crocodile.last.animal << Animal.new(species: "Crocodylus porosus")
+=> #<Animal id: 2, species: "Crocodylus porosus", animalable_type: "Crocodile", animalable_id: 1, created_at: "", updated_at: "">
+
+Eagle.create(name: "Eagle")
+Eagle.last.animal << Animal.new(species: "Bald eagle")
+=> #<Animal id: 3, species: "Bald eagle", animalable_type: "Eagle", animalable_id: 1, created_at: "", updated_at: "">
+
+```
